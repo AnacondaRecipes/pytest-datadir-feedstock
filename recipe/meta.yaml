@@ -10,31 +10,41 @@ source:
 
 build:
   number: 0
-  noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  skip: True  # [py<38]
 
 requirements:
   host:
     - pip
-    - python >=3.6
-    - setuptools_scm
+    - python
+    - wheel
+    - setuptools >=61
+    - setuptools_scm >=6.2
   run:
-    - python >=3.6
-    - pytest
+    - python
+    - pytest >=7.0
 
 test:
-  requires:
-    - pytest
+  source_files:
+    - tests
   imports:
     - pytest_datadir
   commands:
-    - pytest --help
+    - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -v tests
+  requires:
+    - pip
 
 about:
   home: https://github.com/gabrielcnr/pytest-datadir
-  license: MIT
-  license_file: LICENSE
   summary: pytest plugin for manipulating test data directories and files.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  description: pytest plugin for manipulating test data directories and files.
+  doc_url: https://github.com/gabrielcnr/pytest-datadir/blob/master/README.md
+  dev_url: https://github.com/gabrielcnr/pytest-datadir
 
 extra:
   recipe-maintainers:
